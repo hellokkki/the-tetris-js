@@ -1,6 +1,7 @@
 import { context } from "./tetris.js";
+import { canvas } from "./tetris.js";
 
-const startPosition = { x:4, y: 0 };
+const startPosition = { x: 4, y: 0 };
 
 export const TETROMINOES = {
     I: {
@@ -70,7 +71,7 @@ export const pickRandomTetromino = () => {
     const keys = Object.keys(TETROMINOES);
     const index = Math.floor(Math.random() * keys.length);
     const key = keys[index];
-    return TETROMINOES[key]
+    return TETROMINOES[key];
 };
 
 
@@ -90,6 +91,7 @@ export const pickRandomTetromino = () => {
     }
 
     drawTetromino() {
+        this.context.clearRect(0, 0, canvas.widht, canvas.height);
         this.context.fillStyle = this.color;
         this.shape.forEach((row, y) => 
         row.forEach((value, x) => {
@@ -98,5 +100,24 @@ export const pickRandomTetromino = () => {
             }
         })
         )
+    }
+
+    moveTetromino(route) {
+        switch (route) {
+        case 'ArrowUp':
+        
+        break;
+        case 'ArrowDown':
+        this.position.y++
+        break;
+    
+        case 'ArrowLet':
+        this.position.x--
+        console.log(this.position)
+        break;
+        case 'ArrowRight':
+        this.position.x++
+        break;
+        }
     }
   }

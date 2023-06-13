@@ -12,17 +12,34 @@ const tetrisColumns = 10;
 const tetrisRows = 20;
 
 let board = new Board(tetrisRows, tetrisColumns, context);
+let tetromino;
 
-function play() {
-    console.log('play')
-    board.reset();
-    board.drawBoard();
-    let tetromino = new Tetromino(context)
-    tetromino.pickTeromino()
-    tetromino.drawTetromino();
+function draw() {
     console.log(tetromino)
-    
-    board.setTetromino(tetromino)
+    console.log(board)
+    board.drawBoard()
+    tetromino.drawTetromino(board.grid);
+  
 }
 
-button.addEventListener('click', play)
+function play() {
+    board.reset();
+    tetromino = new Tetromino(context)
+    tetromino.pickTeromino()
+    board.setTetromino(tetromino)
+
+    draw();
+}
+
+button.addEventListener('click', play);
+
+
+document.addEventListener('keydown', (event) => {
+    const nextRow = tetromino.position.y + 1;
+    board.checkCollision(nextRow, tetromino.position.x) ? null : tetromino.moveTetromino(event.key)
+
+    context.clearRect(canvas.width, canvas.height, 0, 0);
+    context.beginPath()
+    board.updateBoard()
+    draw()
+});
