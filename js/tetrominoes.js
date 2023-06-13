@@ -1,5 +1,7 @@
 import { context } from "./tetris.js";
 import { canvas } from "./tetris.js";
+import { canMoveDown, canMoveLeft, canMoveRight } from "./collisions.js";
+import { defaultCell } from "./board.js";
 
 const startPosition = { x: 4, y: 0 };
 
@@ -74,6 +76,22 @@ export const pickRandomTetromino = () => {
     return TETROMINOES[key];
 };
 
+export const mergeShapeWithBoard = (shape, board, row, col) => {
+    for (let i = 0; i < shape.length; i++) {
+      for (let j = 0; j < shape[i].length; j++) {
+        const cellValue = shape[i][j];
+        if (cellValue === 1) {
+          // Set the corresponding cell on the board to the tetromino color
+          board[row + i][col + j].occupied = true;
+          board[row + i][col + j].value = 1;
+        } else {
+          // Set the corresponding cell on the board to the default cell
+          board[row + i][col + j] = { ...defaultCell };
+        }
+      }
+    }
+  }  
+
 
   export class Tetromino {
     constructor(context) {
@@ -102,20 +120,22 @@ export const pickRandomTetromino = () => {
         )
     }
 
-    moveTetromino(route) {
+    moveTetromino(route, board) {
         switch (route) {
         case 'ArrowUp':
         
         break;
         case 'ArrowDown':
+        if (canMoveDown(this.shape, board, this.position.y, this.position.x))
         this.position.y++
         break;
-    
-        case 'ArrowLet':
+        case 'ArrowLeft':
+        if (canMoveLeft(this.shape, board, this.position.y, this.position.x))
         this.position.x--
         console.log(this.position)
         break;
         case 'ArrowRight':
+        if (canMoveRight(this.shape, board, this.position.y, this.position.x))
         this.position.x++
         break;
         }

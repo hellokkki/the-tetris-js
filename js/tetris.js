@@ -35,8 +35,8 @@ button.addEventListener('click', play);
 
 
 document.addEventListener('keydown', (event) => {
-    const nextRow = tetromino.position.y + 1;
-    board.checkCollision(nextRow, tetromino.position.x) ? null : tetromino.moveTetromino(event.key)
+    // const nextRow = tetromino.position.y + 1;
+    tetromino.moveTetromino(event.key, board.grid)
 
     context.clearRect(canvas.width, canvas.height, 0, 0);
     context.beginPath()
