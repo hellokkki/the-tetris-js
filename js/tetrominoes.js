@@ -3,7 +3,7 @@ import { canvas } from "./tetris.js";
 import { canMoveDown, canMoveLeft, canMoveRight } from "./collisions.js";
 import { defaultCell } from "./board.js";
 
-const startPosition = { x: 4, y: 0 };
+export const startPosition = { x: 4, y: 0 };
 
 export const TETROMINOES = {
     I: {
@@ -37,22 +37,25 @@ export const TETROMINOES = {
     O: {
         shape: [
            [1, 1],
-           [1, 1]
+           [1, 1],
+           [0, 0]
         ],
         color: '#EDE012',
         position: startPosition
     },
     S: {
-       shape: [
-        [0, 1, 1],
-        [1, 1, 0]
-       ],
-       color: '#32ED12',
-       position: startPosition
-     },
+        shape: [
+           [0, 1, 1],
+           [1, 1, 0],
+           [0, 0, 0]
+        ],
+        color: '#EDE012',
+        position: startPosition
+    },
      Z: {
         shape: [
-            [1, 1, 0],
+            [0, 0, 0],
+            [1, 1, 0]
             [0, 1, 1]
         ],
         color: '#ED1212',
@@ -61,8 +64,8 @@ export const TETROMINOES = {
      T: {
         shape: [
             [0, 1, 0],
-            [0, 1, 0],
-            [1, 1, 1]
+            [1, 1, 1],
+            [0, 0, 0]
         ],
         color: '#9412ED',
         position: startPosition
@@ -76,21 +79,27 @@ export const pickRandomTetromino = () => {
     return TETROMINOES[key];
 };
 
-export const mergeShapeWithBoard = (shape, board, row, col) => {
+export const mergeShapeWithBoard = (shape, color, board, row, col) => {
+    const mergeEvent = new CustomEvent('hasBeenMerged');
+
     for (let i = 0; i < shape.length; i++) {
-      for (let j = 0; j < shape[i].length; j++) {
-        const cellValue = shape[i][j];
-        if (cellValue === 1) {
-          // Set the corresponding cell on the board to the tetromino color
-          board[row + i][col + j].occupied = true;
-          board[row + i][col + j].value = 1;
-        } else {
-          // Set the corresponding cell on the board to the default cell
-          board[row + i][col + j] = { ...defaultCell };
+        for (let j = 0; j < shape[i].length; j++) {
+          const cellValue = shape[i][j];
+          if (cellValue === 1) {
+            // Set the corresponding cell on the board to the tetromino color
+            // board[row + i][col + j].occupied = true;
+            // board[row + i][col + j].value = 1;
+            board[row + i][col + j] = {
+                color: color,
+                occupied: true,
+                value: 1
+            };
+            document.dispatchEvent(mergeEvent);
+          }
         }
       }
-    }
-  }  
+    }  
+  
 
 
   export class Tetromino {
@@ -126,7 +135,7 @@ export const mergeShapeWithBoard = (shape, board, row, col) => {
         
         break;
         case 'ArrowDown':
-        if (canMoveDown(this.shape, board, this.position.y, this.position.x))
+        if (canMoveDown(this.shape, this.color, board, this.position.y, this.position.x))
         this.position.y++
         break;
         case 'ArrowLeft':
