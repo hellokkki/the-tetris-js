@@ -3,6 +3,8 @@ import { canvas } from "./tetris.js";
 import { canMoveDown, canMoveLeft, canMoveRight } from "./collisions.js";
 import { defaultCell } from "./board.js";
 
+const random = new Math.seedrandom('1');
+
 export const startPosition = { x: 4, y: 0 };
 
 export const TETROMINOES = {
@@ -49,7 +51,7 @@ export const TETROMINOES = {
            [1, 1, 0],
            [0, 0, 0]
         ],
-        color: '#EDE012',
+        color: '#EE1C08',
         position: startPosition
     },
      Z: {
@@ -74,7 +76,8 @@ export const TETROMINOES = {
 
 export const pickRandomTetromino = () => {
     const keys = Object.keys(TETROMINOES);
-    const index = Math.floor(Math.random() * keys.length);
+    const index = Math.floor(random() * keys.length);
+    console.log(index)
     const key = keys[index];
     return TETROMINOES[key];
 };
@@ -120,8 +123,8 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
     drawTetromino() {
         this.context.clearRect(0, 0, canvas.widht, canvas.height);
         this.context.fillStyle = this.color;
-        this.shape.forEach((row, y) => 
-        row.forEach((value, x) => {
+        this.shape.forEach((rows, y) => 
+        rows.forEach((value, x) => {
             if (value > 0) {
                 this.context.fillRect(this.position.x + x, this.position.y + y, 1, 1)
             }

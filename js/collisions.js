@@ -1,10 +1,8 @@
 import { mergeShapeWithBoard } from "./tetrominoes.js";
 
-function checkCollision(shape, board, row, col) {
-    console.log(board)
+export function checkCollision(shape, board, row, col) {
    for (let i = 0; i < shape.length; i++) {
      for (let j = 0; j < shape[i].length; j++) {
-        console.log(shape[i].length)
         const cellValue = shape[i][j];
         if (cellValue === 1) {
             const boardRow = row + i;
@@ -21,9 +19,11 @@ function checkCollision(shape, board, row, col) {
     return false
 }
 
-export const canMoveDown = (shape, board, row, col) => {
+export const canMoveDown = (shape, color, board, row, col) => {
     if (checkCollision(shape, board, row + 1, col)) {
-        mergeShapeWithBoard(shape, board, row, col);
+        mergeShapeWithBoard(shape, color, board, row, col);
+        const dropEvent = new CustomEvent('hasBeenDropped');
+        document.dispatchEvent(dropEvent);
     } else {
         return !checkCollision(shape, board, row, col)
     }
