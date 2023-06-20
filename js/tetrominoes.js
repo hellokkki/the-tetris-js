@@ -1,9 +1,8 @@
 import { context } from "./tetris.js";
 import { canvas } from "./tetris.js";
 import { canMoveDown, canMoveLeft, canMoveRight } from "./collisions.js";
-import { defaultCell } from "./board.js";
-
-const random = new Math.seedrandom('1');
+import { checkCollision } from "./collisions.js";
+// const random = new Math.seedrandom('1');
 
 export const startPosition = { x: 4, y: 0 };
 
@@ -57,7 +56,7 @@ export const TETROMINOES = {
      Z: {
         shape: [
             [0, 0, 0],
-            [1, 1, 0]
+            [1, 1, 0],
             [0, 1, 1]
         ],
         color: '#ED1212',
@@ -76,15 +75,14 @@ export const TETROMINOES = {
 
 export const pickRandomTetromino = () => {
     const keys = Object.keys(TETROMINOES);
-    const index = Math.floor(random() * keys.length);
-    console.log(index)
+    const index = Math.trunc(Math.random() * keys.length);
     const key = keys[index];
     return TETROMINOES[key];
 };
 
 export const mergeShapeWithBoard = (shape, color, board, row, col) => {
     const mergeEvent = new CustomEvent('hasBeenMerged');
-
+    if (!checkCollision(shape, board, row, col)) {
     for (let i = 0; i < shape.length; i++) {
         for (let j = 0; j < shape[i].length; j++) {
           const cellValue = shape[i][j];
@@ -101,9 +99,8 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
           }
         }
       }
+    }
     }  
-  
-
 
   export class Tetromino {
     constructor(context) {
@@ -120,9 +117,10 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
         this.position = position
     }
 
-    drawTetromino() {
+    drawTetromino(board) {
         this.context.clearRect(0, 0, canvas.widht, canvas.height);
         this.context.fillStyle = this.color;
+        if (!checkCollision(this.shape, board, this.position.y, this.position.x)) {
         this.shape.forEach((rows, y) => 
         rows.forEach((value, x) => {
             if (value > 0) {
@@ -130,12 +128,50 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
             }
         })
         )
+     } else {
+        let gameOver = new CustomEvent('gameOver');
+        document.dispatchEvent(gameOver);
+     } 
+    }
+
+    rotateTetromino(board) {
+        const rotatedTetromino = [];
+        const rows = this.shape.length;
+        const cols = this.shape[0].length;
+
+        for (let col = 0; col < cols; col++) {
+            const newRow = []
+            for (let row = rows - 1; row >= 0; row--) {
+              newRow.push(this.shape[row][col])
+            }
+            rotatedTetromino.push(newRow)
+          }
+
+          const tetrominoWidth = rotatedTetromino[0].length
+          const tetrominoHeight = rotatedTetromino.length
+          const maxX = board.columns - tetrominoWidth
+          const maxY = board.rows - tetrominoHeight
+          if (this.position.x > maxX) {
+            this.position.x = maxX
+          }
+          if (this.position.x < 0) {
+            this.position.x = 0
+          }
+          if (this.position.y > maxY) {
+            this.position.y = maxY
+          }
+          if (this.position.y < 0) {
+            this.position.y = 0
+          }
+        
+          this.shape = rotatedTetromino
     }
 
     moveTetromino(route, board) {
         switch (route) {
         case 'ArrowUp':
-        
+        this.rotateTetromino(board)
+        console.log('up')
         break;
         case 'ArrowDown':
         if (canMoveDown(this.shape, this.color, board, this.position.y, this.position.x))
@@ -144,7 +180,6 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
         case 'ArrowLeft':
         if (canMoveLeft(this.shape, board, this.position.y, this.position.x))
         this.position.x--
-        console.log(this.position)
         break;
         case 'ArrowRight':
         if (canMoveRight(this.shape, board, this.position.y, this.position.x))

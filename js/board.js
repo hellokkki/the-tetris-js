@@ -42,11 +42,31 @@ export class Board {
         this.tetromino = tetromino;
     }
 
+    cleanRows() {
+     let score = 0; 
+      this.grid.forEach((row, rowIndex) => {
+      if (row.every(cell => cell.occupied === true)) {
+        for (let i = rowIndex; i > 0; i--) {
+            this.grid[i] = this.grid[i - 1];
+        }
+        this.grid[row] = Array(this.columns).fill(defaultCell);
 
-    updateBoard() {
-    //  const { shape, position } = this.tetromino;
-  
-    //  mergeShapeWithBoard(shape, this.grid, position.y, position.x)
+        score++;
+        const cleaning = new CustomEvent('cleaningMeansScores', { detail: { score: score } } );
+        document.dispatchEvent(cleaning);
+      }
+
+      for (let row = this.height - 2; row >= 0; row--) {
+        for (let col = 0; col < this.width; col++) {
+          const cell = this.grid[row][col]
+          if (cell.occupied && !this.grid[row + 1][col].occupied) {
+            // Move the tetromino block down
+            this.grid[row + 1][col] = cell
+            this.grid[row][col] = defaultCell
+          }
+        }
+      }
+      })
     }
 
 }

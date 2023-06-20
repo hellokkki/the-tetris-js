@@ -1,20 +1,22 @@
 import { mergeShapeWithBoard } from "./tetrominoes.js";
 
 export function checkCollision(shape, board, row, col) {
-   for (let i = 0; i < shape.length; i++) {
-     for (let j = 0; j < shape[i].length; j++) {
-        const cellValue = shape[i][j];
-        if (cellValue === 1) {
-            const boardRow = row + i;
-            const boardCol = col + j;
-            console.log(boardCol)
-            if (boardRow < 0 || boardRow >= board.length || boardCol < 0 ||
-                boardCol >= board[0].length || board[boardRow][boardCol].occupied) {
-                    return true;
-                }
+  const numRows = shape.length
+  const numCols = shape[0].length
+
+   for (let i = 0; i < numRows; i++) {
+    for (let j = 0; j < numCols; j++) {
+      const cellValue = shape[i][j]
+      if (cellValue === 1) {
+        const boardRow = row + i
+        const boardCol = col + j
+        if (boardRow < 0 || boardRow >= board.length || boardCol < 0 ||
+            boardCol >= board[0].length || board[boardRow][boardCol].occupied) {
+          return true
         }
-     }
+      }
     }
+  }
 
     return false
 }
