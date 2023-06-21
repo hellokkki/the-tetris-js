@@ -39,7 +39,6 @@ export const TETROMINOES = {
         shape: [
            [1, 1],
            [1, 1],
-           [0, 0]
         ],
         color: '#EDE012',
         position: startPosition
@@ -118,6 +117,7 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
     }
 
     drawTetromino(board) {
+        const gameOver = new CustomEvent('gameOver')
         this.context.clearRect(0, 0, canvas.widht, canvas.height);
         this.context.fillStyle = this.color;
         if (!checkCollision(this.shape, board, this.position.y, this.position.x)) {
@@ -129,7 +129,6 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
         })
         )
      } else {
-        let gameOver = new CustomEvent('gameOver');
         document.dispatchEvent(gameOver);
      } 
     }
@@ -171,7 +170,6 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
         switch (route) {
         case 'ArrowUp':
         this.rotateTetromino(board)
-        console.log('up')
         break;
         case 'ArrowDown':
         if (canMoveDown(this.shape, this.color, board, this.position.y, this.position.x))

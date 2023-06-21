@@ -11,6 +11,7 @@ context.fillRect(canvas.width, canvas.height, 1, 1)
 const levelPoints = document.querySelector('#level');
 const scorePoints = document.querySelector('#score');
 const button = document.querySelector('#play-button');
+const gameOverPopup = document.querySelector('#game-over');
 
 const tetrisColumns = 10;
 const tetrisRows = 20;
@@ -35,9 +36,8 @@ function draw() {
     tetromino.drawTetromino(board.grid)
 }
 
-function runGame () {
+let gameInterval = function () {
     setInterval(() => { 
-        console.log(board)
       tetromino.moveTetromino('ArrowDown', board.grid)
       draw();
     }, 1000)
@@ -58,31 +58,40 @@ function play() {
     pickCurrentTetromino(queue)
     board.setTetromino(tetromino)
     draw()
-    setTimeout(runGame(), 1000)
+    setTimeout(gameInterval(), 1000)
 }
 
-
-
-button.addEventListener('click', play);
-
-
-document.addEventListener('keydown', (event) => {
-   
-    context.clearRect(canvas.width, canvas.height, 0, 0);
-    context.beginPath()
-    tetromino.moveTetromino(event.key, board.grid)
-    draw()
-});
-
-document.addEventListener('hasBeenDropped', () => {
+const dropTetromino = () => {
     level++;
     board.cleanRows();
     tetromino = pickCurrentTetromino(queue);
     tetromino.position = { x: 4, y: 0 };
     renderPoints(score, level)
-})
+}
 
-document.addEventListener('cleaningMeansScores', (e) => {
- score = score + e.detail.score * 4;
- renderPoints(score, level)
+const cleaning = (event) => {
+    score = score + event.detail.score * 4;
+    renderPoints(score, level)
+}
+
+button.addEventListener('click', play);
+
+
+document.addEventListener('keydown', (e) => {
+    context.clearRect(canvas.width, canvas.height, 0, 0);
+    context.beginPath()
+    tetromino.moveTetromino(e.key, board.grid)
+    draw()
+});
+
+document.addEventListener('hasBeenDropped', dropTetromino)
+
+document.addEventListener('cleaningMeansScores', cleaning)
+
+document.addEventListener('gameOver', () => {
+   gameOverPopup.classList.remove('hidden');
+   clearInterval(gameInterval());
+
+   document.removeEventListener('hasBeenDropped', dropTetromino);
+   document.removeEventListener('cleaningMeansScores', cleaning);
 })

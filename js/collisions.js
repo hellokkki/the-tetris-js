@@ -26,9 +26,8 @@ export const canMoveDown = (shape, color, board, row, col) => {
         mergeShapeWithBoard(shape, color, board, row, col);
         const dropEvent = new CustomEvent('hasBeenDropped');
         document.dispatchEvent(dropEvent);
-    } else {
-        return !checkCollision(shape, board, row, col)
-    }
+    } 
+    return !checkCollision(shape, board, row + 1, col)
 };
 export const canMoveLeft = (shape, board, row, col) => !checkCollision(shape, board, row, col - 1);
 export const canMoveRight = (shape, board, row, col) => !checkCollision(shape, board, row, col + 1);
