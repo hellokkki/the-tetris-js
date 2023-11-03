@@ -1,6 +1,7 @@
-import { Board } from "./board.js";
+import { Board } from "../board.js";
 import { Tetromino  } from "./tetrominoes.js";
-import { Queue } from "./queue.js";
+import { Queue } from "../queue.js";
+import { isObjectEmpty } from "../utils/objectsUtils.js";
 
 export const canvas = document.querySelector('#tetris');
 export const context = canvas.getContext('2d');
@@ -21,6 +22,7 @@ const queue = new Queue(1000);
 let tetromino;
 let level = 0;
 let score = 0;
+let gameInterval;
 
 function renderPoints (score, level) {
     scorePoints.innerHTML = `score: ${score}`;
@@ -31,16 +33,16 @@ function pickCurrentTetromino (queue) {
     return tetromino = queue.dequeue();
 };
 
+
+function moveDown (tetromino) {
+    if (!isObjectEmpty(tetromino)) {
+        tetromino.moveTetromino('ArrowDown', board)
+    }
+}
+
 function draw() {
     board.drawBoard()
     tetromino.drawTetromino(board.grid)
-}
-
-let gameInterval = function () {
-    setInterval(() => { 
-      tetromino.moveTetromino('ArrowDown', board.grid)
-      draw();
-    }, 1000)
 }
 
 function play() {
@@ -58,8 +60,16 @@ function play() {
     pickCurrentTetromino(queue)
     board.setTetromino(tetromino)
     draw()
-    setTimeout(gameInterval(), 1000)
+    
+    gameInterval = setInterval(() => { 
+        console.log(tetromino)
+        tetromino.moveTetromino('ArrowDown', board.grid)
+        draw();
+      }, 1000)
+
+    setTimeout(gameInterval, 1000)
 }
+
 
 const dropTetromino = () => {
     level++;
@@ -90,7 +100,7 @@ document.addEventListener('cleaningMeansScores', cleaning)
 
 document.addEventListener('gameOver', () => {
    gameOverPopup.classList.remove('hidden');
-   clearInterval(gameInterval());
+   clearInterval(gameInterval);
 
    document.removeEventListener('hasBeenDropped', dropTetromino);
    document.removeEventListener('cleaningMeansScores', cleaning);

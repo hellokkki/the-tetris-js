@@ -1,9 +1,6 @@
-import { context } from "./tetris.js";
 import { canvas } from "./tetris.js";
-import { canMoveDown, canMoveLeft, canMoveRight } from "./collisions.js";
-import { checkCollision } from "./collisions.js";
-// const random = new Math.seedrandom('1');
-
+import { canMoveDown, canMoveLeft, canMoveRight } from "../collisions.js";
+import { checkCollision } from "../collisions.js";
 export const startPosition = { x: 4, y: 0 };
 
 export const TETROMINOES = {
@@ -128,7 +125,8 @@ export const mergeShapeWithBoard = (shape, color, board, row, col) => {
             }
         })
         )
-     } else {
+     } else if (checkCollision(this.shape, board, this.position.y, this.position.x)) {
+        console.log(this.shape);
         document.dispatchEvent(gameOver);
      } 
     }

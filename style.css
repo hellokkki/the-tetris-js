@@ -83,3 +83,11 @@ body {
 .hidden {
     visibility: hidden;
 }
+
+.play-button {
+    display: inline-block;
+    width: 5rem;
+    height: 2rem;
+
+    background-color: #134805;
+}
